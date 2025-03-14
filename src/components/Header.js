@@ -7,8 +7,8 @@ const Header = () => {
     <header>
       <nav>
         <ul>
-          <li><Link to="/">首页</Link></li>
-          <li><Link to="/photos">照片展示</Link></li>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/photos">Photo</Link></li>
           <li><Link to="/guestbook">留言板</Link></li>
         </ul>
       </nav>
