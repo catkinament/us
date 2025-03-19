@@ -25,7 +25,9 @@ const Guestbook = () => {
           .order('time', { ascending: false });
 
         if (error) throw error;
-        setMessages(data);
+        if (data) {
+          setMessages(data);
+        }
       } catch (error) {
         setError('加载留言失败');
       }
@@ -55,25 +57,12 @@ const Guestbook = () => {
     }
   };
 
-  // 删除留言
-  const handleDelete = async (id) => {
-    if (window.confirm('确定删除？')) {
-      setLoading(true);
-      try {
-        let { error } = await supabase.from('messages').delete().eq('id', id);
-        if (!error) setMessages((prevMessages) => prevMessages.filter((msg) => msg.id !== id));
-      } catch (error) {
-        setError('删除失败');
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
   return (
     <div className="guestbook-container">
       <h2>这里是我们，只有我们</h2>
       {error && <p className="error-message">{error}</p>}
+      
+      {/* 提交留言表单 */}
       <form onSubmit={handleSubmit} className="guestbook-form">
         <textarea
           value={message}
@@ -91,17 +80,20 @@ const Guestbook = () => {
           </button>
         </div>
       </form>
+      
+      {/* 显示留言 */}
       <div className="messages">
-        {messages.map((msg) => (
-          <div key={msg.id} className="message">
-            <p className="author">{msg.author === 'you' ? '西西' : '卜卜'}</p>
-            <p className="text">{msg.text}</p>
-            <p className="time">{new Date(msg.time).toLocaleString()}</p>
-            <button onClick={() => handleDelete(msg.id)} disabled={loading}>
-              删除
-            </button>
-          </div>
-        ))}
+        {messages.length === 0 ? (
+          <p>暂无留言</p>
+        ) : (
+          messages.map((msg) => (
+            <div key={msg.id} className="message">
+              <p className="author">{msg.author === 'you' ? '西西' : '卜卜'}</p>
+              <p className="text">{msg.text}</p>
+              <p className="time">{new Date(msg.time).toLocaleString()}</p>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
