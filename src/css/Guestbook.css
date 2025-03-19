@@ -80,7 +80,7 @@ h2 {
 .message {
   padding: 10px;
   border-radius: 10px;
-  color: white;
+  color: rgb(0, 0, 0);
   max-width: 80%;
   word-wrap: break-word;
 }
@@ -94,7 +94,7 @@ h2 {
 
 /* 卜卜（me）的留言样式 */
 .message.me {
-  background-color: #73f7b5; /* 浅蓝色 */
+  background-color: #23ce78; /* 浅蓝色 */
   align-self: flex-end;
   text-align: right;
 }
