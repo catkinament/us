@@ -1,11 +1,7 @@
+// src/components/Guestbook.js
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '../supabaseClient';  // 导入已创建的 supabase 实例
 import '../css/Guestbook.css';
-
-// 配置 Supabase 客户端
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
-const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const Guestbook = () => {
   const [messages, setMessages] = useState([]);
@@ -25,9 +21,12 @@ const Guestbook = () => {
           .order('time', { ascending: false });
 
         if (error) throw error;
+
         // 确保 data 不为空
         if (data && Array.isArray(data)) {
           setMessages(data);
+        } else {
+          setError('没有找到留言');
         }
       } catch (error) {
         setError('加载留言失败');
@@ -52,6 +51,7 @@ const Guestbook = () => {
       if (error) throw error;
       setMessages((prevMessages) => [data[0], ...prevMessages]);
       setMessage('');
+      setError(''); // 提交成功后清除错误
     } catch (error) {
       setError('提交失败，请稍后再试');
     } finally {
@@ -63,7 +63,7 @@ const Guestbook = () => {
     <div className="guestbook-container">
       <h2>这里是我们，只有我们</h2>
       {error && <p className="error-message">{error}</p>}
-      
+
       {/* 提交留言表单 */}
       <form onSubmit={handleSubmit} className="guestbook-form">
         <textarea
@@ -73,7 +73,7 @@ const Guestbook = () => {
           disabled={loading}
         />
         <div className="form-controls">
-          <select value={author} onChange={(e) => setAuthor(e.target.value)}>
+          <select value={author} onChange={(e) => setAuthor(e.target.value)} disabled={loading}>
             <option value="you">西西</option>
             <option value="me">卜卜</option>
           </select>
@@ -82,7 +82,7 @@ const Guestbook = () => {
           </button>
         </div>
       </form>
-      
+
       {/* 显示留言 */}
       <div className="messages">
         {messages.length === 0 ? (
