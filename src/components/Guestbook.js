@@ -1,4 +1,3 @@
-// src/components/Guestbook.js
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';  // 导入已创建的 supabase 实例
 import '../css/Guestbook.css';
@@ -21,20 +20,26 @@ const Guestbook = () => {
           .order('time', { ascending: false });
 
         if (error) throw error;
-
-        if (data && Array.isArray(data)) {
-          setMessages(data);
-        } else {
-          setError('没有找到留言');
-        }
+        setMessages(data || []);
       } catch (error) {
         setError('加载留言失败');
-      } finally {
-        setLoading(false);
       }
+      setLoading(false);  // ✅ 确保最终会执行
     };
 
     fetchMessages();
+
+    // ✅ 监听新消息
+    const subscription = supabase
+      .channel('messages')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
+        setMessages((prevMessages) => [payload.new, ...prevMessages]); 
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);  // 组件卸载时取消订阅
+    };
   }, []);
 
   // 提交留言
@@ -46,16 +51,14 @@ const Guestbook = () => {
 
     setLoading(true);
     try {
-      let { data, error } = await supabase.from('messages').insert([newMessage]);
+      let { data, error } = await supabase.from('messages').insert([newMessage]).select(); // ✅ 确保返回数据
       if (error) throw error;
-      setMessages((prevMessages) => [data[0], ...prevMessages]);
-      setMessage('');
+      setMessage('');  // 清空输入框
       setError('');
     } catch (error) {
       setError('提交失败，请稍后再试');
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   return (

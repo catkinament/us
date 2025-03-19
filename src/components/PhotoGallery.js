@@ -16,23 +16,30 @@ const PhotoGallery = () => {
   // 🚀 从 Supabase Storage 获取所有图片
   const fetchPhotos = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase.storage.from('photos').list('', {
         limit: 100, // 最多获取100张
         sortBy: { column: 'created_at', order: 'desc' },
       });
 
       if (error) throw error;
+      if (!data || data.length === 0) return setPhotos([]);
 
       // 获取每张图片的 Public URL
-      const urls = data.map((file) => ({
-        id: file.id,
-        url: supabase.storage.from('photos').getPublicUrl(file.name).data.publicUrl,
-      }));
+      const urls = data.map((file) => {
+        const publicUrlData = supabase.storage.from('photos').getPublicUrl(file.name);
+        return {
+          id: file.name, // 使用文件名作为唯一标识
+          url: publicUrlData?.data?.publicUrl || '',
+        };
+      });
 
       setPhotos(urls);
     } catch (error) {
-      setError('加载照片失败');
-      console.error(error);
+      setError('加载照片失败，请稍后再试');
+      console.error(error.message || error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,31 +55,31 @@ const PhotoGallery = () => {
 
     setLoading(true);
     try {
-      const uploadedPhotosPromises = Array.from(files).map(async (file) => {
-        const fileName = `${Date.now()}-${file.name}`;
-        const { error } = await supabase.storage
-          .from('photos')
-          .upload(fileName, file, {
+      const uploadedPhotos = await Promise.all(
+        Array.from(files).map(async (file) => {
+          const fileName = `${Date.now()}-${crypto.randomUUID()}-${file.name}`;
+          const { error } = await supabase.storage.from('photos').upload(fileName, file, {
             cacheControl: '3600',
             upsert: false,
           });
 
-        if (error) throw error;
+          if (error) throw error;
 
-        return supabase.storage.from('photos').getPublicUrl(fileName).data.publicUrl;
-      });
-
-      const uploadedPhotos = await Promise.all(uploadedPhotosPromises);
+          // 获取上传后图片的 Public URL
+          const publicUrlData = supabase.storage.from('photos').getPublicUrl(fileName);
+          return {
+            id: fileName,
+            url: publicUrlData?.data?.publicUrl || '',
+          };
+        })
+      );
 
       // 立即更新 UI
-      setPhotos((prevPhotos) => [
-        ...uploadedPhotos.map((url, index) => ({ id: Date.now() + index, url })),
-        ...prevPhotos,
-      ]);
+      setPhotos((prevPhotos) => [...uploadedPhotos, ...prevPhotos]);
       setError(null);
     } catch (err) {
       setError('上传失败，请稍后再试');
-      console.error(err);
+      console.error(err.message || err);
     } finally {
       setLoading(false);
     }
@@ -82,22 +89,12 @@ const PhotoGallery = () => {
     <div>
       <h2>照片墙</h2>
       {error && <p className="error-message">{error}</p>}
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageUpload}
-        multiple
-        disabled={loading}
-      />
+      <input type="file" accept="image/*" onChange={handleImageUpload} multiple disabled={loading} />
+
       <div className="gallery">
         {photos.map((photo) => (
           <div key={photo.id} className="photo-container">
-            <img
-              src={photo.url}
-              alt="Uploaded"
-              className="photo"
-              onClick={() => setZoomedImage(photo.url)}
-            />
+            <img src={photo.url} alt="Uploaded" className="photo" onClick={() => setZoomedImage(photo.url)} />
           </div>
         ))}
       </div>
