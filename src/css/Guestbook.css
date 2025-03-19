@@ -1,63 +1,112 @@
+/* 主容器 */
 .guestbook-container {
   max-width: 600px;
-  margin: 0 auto;
+  margin: 20px auto;
   padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: #f9f9f9;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* 标题 */
+h2 {
+  text-align: center;
+  color: #333;
+}
+
+/* 错误消息 */
 .error-message {
   color: red;
   text-align: center;
-  font-weight: bold;
+  font-size: 14px;
 }
 
+/* 表单 */
 .guestbook-form {
   display: flex;
   flex-direction: column;
+  gap: 10px;
   margin-bottom: 20px;
 }
 
-textarea {
+/* 文本框 */
+.guestbook-form textarea {
   width: 100%;
-  height: 100px;
-  margin-bottom: 10px;
+  height: 80px;
   padding: 10px;
+  font-size: 14px;
+  border-radius: 5px;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  resize: none;
 }
 
+/* 按钮和选择框 */
 .form-controls {
   display: flex;
   justify-content: space-between;
 }
 
-button {
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
+.form-controls select,
+.form-controls button {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-button:disabled {
-  background-color: #ddd;
+.form-controls select {
+  border: 1px solid #ccc;
+  background: white;
 }
 
+.form-controls button {
+  background: #4fa050;
+  color: white;
+  border: none;
+}
+
+.form-controls button:disabled {
+  background: #aaa;
+}
+
+/* 留言区 */
 .messages {
-  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
+/* 单条留言 */
 .message {
-  background-color: #fff;
   padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  color: white;
+  max-width: 80%;
+  word-wrap: break-word;
 }
 
-.message p {
-  margin: 5px 0;
+/* 西西（you）的留言样式 */
+.message.you {
+  background-color: #ffcccc; /* 浅粉色 */
+  align-self: flex-start;
+  text-align: left;
+}
+
+/* 卜卜（me）的留言样式 */
+.message.me {
+  background-color: #73f7b5; /* 浅蓝色 */
+  align-self: flex-end;
+  text-align: right;
+}
+
+/* 留言中的作者名 */
+.author {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* 留言时间 */
+.time {
+  font-size: 12px;
+  opacity: 0.7;
 }

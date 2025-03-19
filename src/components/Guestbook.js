@@ -22,7 +22,6 @@ const Guestbook = () => {
 
         if (error) throw error;
 
-        // 确保 data 不为空
         if (data && Array.isArray(data)) {
           setMessages(data);
         } else {
@@ -51,7 +50,7 @@ const Guestbook = () => {
       if (error) throw error;
       setMessages((prevMessages) => [data[0], ...prevMessages]);
       setMessage('');
-      setError(''); // 提交成功后清除错误
+      setError('');
     } catch (error) {
       setError('提交失败，请稍后再试');
     } finally {
@@ -89,7 +88,7 @@ const Guestbook = () => {
           <p>暂无留言</p>
         ) : (
           messages.map((msg) => (
-            <div key={msg.id} className="message">
+            <div key={msg.id} className={`message ${msg.author}`}>
               <p className="author">{msg.author === 'you' ? '西西' : '卜卜'}</p>
               <p className="text">{msg.text}</p>
               <p className="time">{new Date(msg.time).toLocaleString()}</p>
