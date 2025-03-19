@@ -80,7 +80,7 @@ h2 {
 .message {
   padding: 10px;
   border-radius: 10px;
-  color: black; /* 保证字体颜色为黑色 */
+  color: black; /* 留言文本颜色为黑色 */
   max-width: 80%;
   word-wrap: break-word;
 }
@@ -103,12 +103,10 @@ h2 {
 .author {
   font-weight: bold;
   margin-bottom: 5px;
-  color: black; /* 作者名颜色为黑色 */
 }
 
 /* 留言时间 */
 .time {
   font-size: 12px;
   opacity: 0.7;
-  color: black; /* 留言时间颜色为黑色 */
 }
