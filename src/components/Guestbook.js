@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import '../css/Guestbook.css';
 
+// 配置 Supabase 客户端
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -17,9 +18,13 @@ const Guestbook = () => {
   useEffect(() => {
     const fetchMessages = async () => {
       setLoading(true);
-      let { data, error } = await supabase.from('messages').select('*').order('time', { ascending: false });
-      if (error) setError('加载留言失败');
-      else setMessages(data);
+      try {
+        let { data, error } = await supabase.from('messages').select('*').order('time', { ascending: false });
+        if (error) throw error;
+        setMessages(data);
+      } catch (error) {
+        setError('加载留言失败');
+      }
       setLoading(false);
     };
     fetchMessages();
@@ -33,22 +38,30 @@ const Guestbook = () => {
     const newMessage = { author, text: message, time: new Date().toISOString() };
 
     setLoading(true);
-    let { data, error } = await supabase.from('messages').insert([newMessage]);
-
-    if (error) setError('提交失败');
-    else setMessages([data[0], ...messages]); // 插入到顶部
-
-    setMessage('');
-    setLoading(false);
+    try {
+      let { data, error } = await supabase.from('messages').insert([newMessage]);
+      if (error) throw error;
+      setMessages((prevMessages) => [data[0], ...prevMessages]);
+      setMessage('');
+    } catch (error) {
+      setError('提交失败，请稍后再试');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // 删除留言
   const handleDelete = async (id) => {
     if (window.confirm('确定删除？')) {
       setLoading(true);
-      let { error } = await supabase.from('messages').delete().eq('id', id);
-      if (!error) setMessages(messages.filter((msg) => msg.id !== id));
-      setLoading(false);
+      try {
+        let { error } = await supabase.from('messages').delete().eq('id', id);
+        if (!error) setMessages((prevMessages) => prevMessages.filter((msg) => msg.id !== id));
+      } catch (error) {
+        setError('删除失败');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -57,7 +70,7 @@ const Guestbook = () => {
       <h2>这里是我们，只有我们</h2>
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleSubmit} className="guestbook-form">
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="要说些什么呢"></textarea>
+        <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="要说些什么呢" />
         <div className="form-controls">
           <select value={author} onChange={(e) => setAuthor(e.target.value)}>
             <option value="you">西西</option>

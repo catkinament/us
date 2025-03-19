@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import '../css/PhotoGallery.css';
 
@@ -18,12 +18,10 @@ const PhotoGallery = () => {
     if (!files.length) return;
 
     try {
-      const uploadedPhotos = [];
-
-      for (const file of files) {
+      const uploadedPhotosPromises = Array.from(files).map(async (file) => {
         const fileName = `${Date.now()}-${file.name}`;
         const { data, error } = await supabase.storage
-          .from('photos')  // 确保 Supabase 存储桶名为 'photos'
+          .from('photos')
           .upload(fileName, file, {
             cacheControl: '3600',
             upsert: false,
@@ -32,13 +30,14 @@ const PhotoGallery = () => {
         if (error) throw error;
 
         const { data: urlData } = await supabase.storage.from('photos').getPublicUrl(fileName);
-        uploadedPhotos.push({
+        return {
           id: Date.now(),
           src: urlData.publicUrl,
           alt: file.name,
-        });
-      }
+        };
+      });
 
+      const uploadedPhotos = await Promise.all(uploadedPhotosPromises);
       setPhotos((prevPhotos) => [...prevPhotos, ...uploadedPhotos]);
       setError(null);
     } catch (err) {
@@ -56,6 +55,22 @@ const PhotoGallery = () => {
   const closeZoom = () => {
     setZoomedImage(null);
   };
+
+  // 键盘事件：关闭放大图片
+  const handleKeyPress = (e) => {
+    if (e.key === 'Escape') {
+      closeZoom();
+    }
+  };
+
+  useEffect(() => {
+    if (zoomedImage) {
+      window.addEventListener('keydown', handleKeyPress);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [zoomedImage]);
 
   return (
     <div>
