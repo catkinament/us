@@ -14,7 +14,6 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "fs": "^0.0.1-security",
-    "gh-pages": "^6.3.0",
     "multer": "^1.4.5-lts.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -50,5 +49,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
 }

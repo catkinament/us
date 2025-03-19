@@ -25,13 +25,15 @@ const Guestbook = () => {
           .order('time', { ascending: false });
 
         if (error) throw error;
-        if (data) {
+        // 确保 data 不为空
+        if (data && Array.isArray(data)) {
           setMessages(data);
         }
       } catch (error) {
         setError('加载留言失败');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     fetchMessages();
