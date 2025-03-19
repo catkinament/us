@@ -11,12 +11,14 @@ const PhotoGallery = () => {
   const [photos, setPhotos] = useState([]);
   const [zoomedImage, setZoomedImage] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   // 上传图片到 Supabase
   const handleImageUpload = async (e) => {
     const files = e.target.files;
     if (!files.length) return;
 
+    setLoading(true);
     try {
       const uploadedPhotosPromises = Array.from(files).map(async (file) => {
         const fileName = `${Date.now()}-${file.name}`;
@@ -43,6 +45,8 @@ const PhotoGallery = () => {
     } catch (err) {
       setError('上传失败，请稍后再试');
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,6 +85,7 @@ const PhotoGallery = () => {
         accept="image/*"
         onChange={handleImageUpload}
         multiple
+        disabled={loading}
       />
       <div className="gallery">
         {photos.map((photo) => (

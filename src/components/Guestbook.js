@@ -19,7 +19,11 @@ const Guestbook = () => {
     const fetchMessages = async () => {
       setLoading(true);
       try {
-        let { data, error } = await supabase.from('messages').select('*').order('time', { ascending: false });
+        let { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .order('time', { ascending: false });
+
         if (error) throw error;
         setMessages(data);
       } catch (error) {
@@ -27,6 +31,7 @@ const Guestbook = () => {
       }
       setLoading(false);
     };
+
     fetchMessages();
   }, []);
 
@@ -70,13 +75,20 @@ const Guestbook = () => {
       <h2>这里是我们，只有我们</h2>
       {error && <p className="error-message">{error}</p>}
       <form onSubmit={handleSubmit} className="guestbook-form">
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="要说些什么呢" />
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="要说些什么呢"
+          disabled={loading}
+        />
         <div className="form-controls">
           <select value={author} onChange={(e) => setAuthor(e.target.value)}>
             <option value="you">西西</option>
             <option value="me">卜卜</option>
           </select>
-          <button type="submit" disabled={loading}>{loading ? '提交中...' : '写下留言'}</button>
+          <button type="submit" disabled={loading}>
+            {loading ? '提交中...' : '写下留言'}
+          </button>
         </div>
       </form>
       <div className="messages">
@@ -85,7 +97,9 @@ const Guestbook = () => {
             <p className="author">{msg.author === 'you' ? '西西' : '卜卜'}</p>
             <p className="text">{msg.text}</p>
             <p className="time">{new Date(msg.time).toLocaleString()}</p>
-            <button onClick={() => handleDelete(msg.id)}>删除</button>
+            <button onClick={() => handleDelete(msg.id)} disabled={loading}>
+              删除
+            </button>
           </div>
         ))}
       </div>
