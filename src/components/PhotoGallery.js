@@ -1,32 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import '../css/PhotoGallery.css';
+
+// 连接 Supabase
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const PhotoGallery = () => {
   const [photos, setPhotos] = useState([]);
   const [zoomedImage, setZoomedImage] = useState(null);
+  const [error, setError] = useState(null);
 
-  // 处理图片上传
-  const handleImageUpload = (e) => {
+  // 上传图片到 Supabase
+  const handleImageUpload = async (e) => {
     const files = e.target.files;
-    if (files.length > 0) {
-      const newPhotos = Array.from(files).map((file) => {
-        const reader = new FileReader();
-        return new Promise((resolve) => {
-          reader.onload = () => {
-            resolve({
-              id: photos.length + 1,
-              src: reader.result,
-              alt: file.name,
-            });
-          };
-          reader.readAsDataURL(file);
-        });
-      });
+    if (!files.length) return;
 
-      // 图片上传后一次性更新
-      Promise.all(newPhotos).then((newImages) => {
-        setPhotos((prevPhotos) => [...prevPhotos, ...newImages]); // 只合并新图片
-      });
+    try {
+      const uploadedPhotos = [];
+
+      for (const file of files) {
+        const fileName = `${Date.now()}-${file.name}`;
+        const { data, error } = await supabase.storage
+          .from('photos')  // 确保 Supabase 存储桶名为 'photos'
+          .upload(fileName, file, {
+            cacheControl: '3600',
+            upsert: false,
+          });
+
+        if (error) throw error;
+
+        const { data: urlData } = await supabase.storage.from('photos').getPublicUrl(fileName);
+        uploadedPhotos.push({
+          id: Date.now(),
+          src: urlData.publicUrl,
+          alt: file.name,
+        });
+      }
+
+      setPhotos((prevPhotos) => [...prevPhotos, ...uploadedPhotos]);
+      setError(null);
+    } catch (err) {
+      setError('上传失败，请稍后再试');
+      console.error(err);
     }
   };
 
@@ -43,6 +60,7 @@ const PhotoGallery = () => {
   return (
     <div>
       <h2>照片片片片片片片</h2>
+      {error && <p className="error-message">{error}</p>}
       <input
         type="file"
         accept="image/*"
