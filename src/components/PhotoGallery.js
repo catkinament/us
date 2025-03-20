@@ -13,28 +13,34 @@ const PhotoGallery = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 🚀 从 Supabase Storage 获取所有图片
+  // 🚀 获取照片
   const fetchPhotos = async () => {
     try {
       setLoading(true);
+      setError(null);
+
       const { data, error } = await supabase.storage.from('photos').list('', {
-        limit: 100, // 最多获取100张
-        sortBy: { column: 'created_at', order: 'desc' },
+        limit: 100,
+        sortBy: { column: 'name', order: 'desc' },
       });
 
       if (error) throw error;
       if (!data || data.length === 0) return setPhotos([]);
 
-      // 获取每张图片的 Public URL
+      console.log('Fetched Photos from Supabase:', data);
+
+      // 获取 Public URL
       const urls = data.map((file) => {
         const publicUrlData = supabase.storage.from('photos').getPublicUrl(file.name);
+        console.log(`File: ${file.name}, Public URL:`, publicUrlData);
+
         return {
-          id: file.name, // 使用文件名作为唯一标识
-          url: publicUrlData?.data?.publicUrl || '',
+          id: file.name,
+          url: publicUrlData.publicUrl || '',
         };
       });
 
-      setPhotos(urls);
+      setPhotos([...urls]);
     } catch (error) {
       setError('加载照片失败，请稍后再试');
       console.error(error.message || error);
@@ -43,12 +49,12 @@ const PhotoGallery = () => {
     }
   };
 
-  // 🌟 组件加载时拉取照片
+  // 🌟 组件加载时获取照片
   useEffect(() => {
     fetchPhotos();
   }, []);
 
-  // 上传图片到 Supabase Storage
+  // 上传照片
   const handleImageUpload = async (e) => {
     const files = e.target.files;
     if (!files.length) return;
@@ -65,11 +71,12 @@ const PhotoGallery = () => {
 
           if (error) throw error;
 
-          // 获取上传后图片的 Public URL
           const publicUrlData = supabase.storage.from('photos').getPublicUrl(fileName);
+          console.log(`Uploaded File: ${fileName}, Public URL:`, publicUrlData);
+
           return {
             id: fileName,
-            url: publicUrlData?.data?.publicUrl || '',
+            url: publicUrlData.publicUrl || '',
           };
         })
       );
