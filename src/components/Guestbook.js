@@ -80,7 +80,7 @@ const Guestbook = () => {
             <option value="me">卜卜</option>
           </select>
           <button type="submit" disabled={loading}>
-            {loading ? '提交中...' : '写下留言'}
+            {loading ? '提交中...' : '亲爱的，轻轻点击这里写下'}
           </button>
         </div>
       </form>
@@ -88,7 +88,7 @@ const Guestbook = () => {
       {/* 显示留言 */}
       <div className="messages">
         {messages.length === 0 ? (
-          <p>暂无留言</p>
+          <p></p>
         ) : (
           messages.map((msg) => (
             <div key={msg.id} className={`message ${msg.author}`}>
