@@ -18,36 +18,39 @@ const PhotoGallery = () => {
     try {
       setLoading(true);
       setError(null);
-
+  
       const { data, error } = await supabase.storage.from('photos').list('', {
         limit: 100,
         sortBy: { column: 'name', order: 'desc' },
       });
-
+  
       if (error) throw error;
       if (!data || data.length === 0) return setPhotos([]);
-
-      console.log('Fetched Photos from Supabase:', data);
-
-      // 获取 Public URL
+  
+      console.log('📸 获取到的文件列表:', data);
+  
+      // 生成 Public URL，并打印出来调试
       const urls = data.map((file) => {
-        const publicUrlData = supabase.storage.from('photos').getPublicUrl(file.name);
-        console.log(`File: ${file.name}, Public URL:`, publicUrlData);
-
+        const { data: publicUrlData } = supabase.storage.from('photos').getPublicUrl(file.name);
+        const publicUrl = publicUrlData.publicUrl; // 🔥 这里要正确访问 publicUrl
+  
+        console.log(`📂 文件: ${file.name}, 🌍 Public URL: ${publicUrl}`);
+  
         return {
           id: file.name,
-          url: publicUrlData.publicUrl || '',
+          url: publicUrl,
         };
       });
-
-      setPhotos([...urls]);
+  
+      setPhotos(urls);
     } catch (error) {
       setError('加载照片失败，请稍后再试');
-      console.error(error.message || error);
+      console.error('❌ 错误:', error.message || error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   // 🌟 组件加载时获取照片
   useEffect(() => {
