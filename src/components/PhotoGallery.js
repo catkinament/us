@@ -88,10 +88,15 @@ const PhotoGallery = () => {
           type="file"
           accept="image/*"
           multiple
+          id="fileUpload"
+          className="upload-input"
           onChange={(e) => setSelectedFiles([...e.target.files])}
         />
+        <label htmlFor="fileUpload" className="upload-label">
+          选择图片
+        </label>
         <button onClick={handleUpload} disabled={uploading}>
-          {uploading ? "上传中..." : `上传 ${selectedFiles.length} 张图片`}
+          {uploading ? "上传中..." : `上传 ${selectedFiles.length} 张`}
         </button>
       </div>
 
@@ -100,11 +105,15 @@ const PhotoGallery = () => {
 
       {/* 图片墙 */}
       <div className="gallery">
-        {photos.map((photo) => (
-          <div key={photo.id} className="photo-container" onClick={() => setEnlargedPhoto(photo.url)}>
-            <img src={photo.url} alt="Uploaded" className="photo" />
-          </div>
-        ))}
+        {photos.length === 0 ? (
+          <p className="no-photos">📷 暂无图片，快去上传吧！</p>
+        ) : (
+          photos.map((photo) => (
+            <div key={photo.id} className="photo-container" onClick={() => setEnlargedPhoto(photo.url)}>
+              <img src={photo.url} alt="Uploaded" className="photo" />
+            </div>
+          ))
+        )}
       </div>
 
       {/* 点击放大图片 */}
