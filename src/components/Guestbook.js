@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import { supabase } from '../supabaseClient';  // 导入已创建的 supabase 实例
+import moment from 'moment-timezone';  // 导入 moment-timezone
 import '../css/Guestbook.css';
 
 const Guestbook = () => {
@@ -20,7 +21,17 @@ const Guestbook = () => {
           .order('time', { ascending: false });
 
         if (error) throw error;
-        setMessages(data || []);
+
+        // 使用 moment-timezone 将每个留言的时间转换为北京时间
+        const formattedMessages = data.map((msg) => {
+          const beijingTime = moment.utc(msg.time).tz('Asia/Shanghai').format('YYYY-MM-DD HH:mm:ss'); // 转换为北京时间
+          return {
+            ...msg,
+            time: beijingTime, // 将时间更新为北京时区
+          };
+        });
+
+        setMessages(formattedMessages || []);
       } catch (error) {
         setError('加载留言失败');
       }
@@ -29,11 +40,11 @@ const Guestbook = () => {
 
     fetchMessages();
 
-    // ✅ 监听新消息
+    // 监听新留言
     const subscription = supabase
       .channel('messages')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => {
-        setMessages((prevMessages) => [payload.new, ...prevMessages]); 
+        setMessages((prevMessages) => [payload.new, ...prevMessages]);
       })
       .subscribe();
 
@@ -47,7 +58,12 @@ const Guestbook = () => {
     e.preventDefault();
     if (!message.trim()) return;
 
-    const newMessage = { author, text: message, time: new Date().toISOString() };
+    // 获取当前时间并转换为 UTC 格式
+    const newMessage = { 
+      author, 
+      text: message, 
+      time: moment().toISOString() // 存储为 UTC 格式
+    };
 
     setLoading(true);
     try {
@@ -88,13 +104,13 @@ const Guestbook = () => {
       {/* 显示留言 */}
       <div className="messages">
         {messages.length === 0 ? (
-          <p></p>
+          <p>没有留言</p>
         ) : (
           messages.map((msg) => (
             <div key={msg.id} className={`message ${msg.author}`}>
               <p className="author">{msg.author === 'you' ? '西西' : '卜卜'}</p>
               <p className="text">{msg.text}</p>
-              <p className="time">{new Date(msg.time).toLocaleString()}</p>
+              <p className="time">{msg.time}</p> {/* 显示已转换的时间 */}
             </div>
           ))
         )}
