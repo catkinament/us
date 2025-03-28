@@ -80,7 +80,7 @@ const PhotoGallery = () => {
 
   return (
     <div>
-      <h2></h2>
+      <h2>照片片片片片片</h2>
       {/* 上传按钮（支持多个文件） */}
       <div className="upload-section">
         <input
