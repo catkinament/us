@@ -4,8 +4,22 @@
   margin: 20px auto;
   padding: 20px;
   border-radius: 10px;
-  background: #f9f9f9;
+  background: #ffffff;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* GIF容器样式，放置在留言板上方 */
+.gif-container {
+  display: flex;
+  justify-content: center; /* 居中显示 */
+}
+
+/* GIF 图片样式 */
+.welcome-gif {
+  width: 100%;  /* 设置宽度为父容器的 100% */
+  max-width: 800px;  /* 限制 GIF 图片的最大宽度 */
+  height: auto;  /* 保持纵横比 */
+  border-radius: 8px;  /* 可选的圆角效果 */
 }
 
 /* 标题 */

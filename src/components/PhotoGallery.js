@@ -81,7 +81,6 @@ const PhotoGallery = () => {
   return (
     <div>
       <h2>照片墙</h2>
-      
       {/* 上传按钮（支持多个文件） */}
       <div className="upload-section">
         <input

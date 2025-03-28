@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';  // 导入已创建的 supabase 实例
 import moment from 'moment-timezone';  // 导入 moment-timezone
 import '../css/Guestbook.css';
+import gif from '../assets/chiikawa gif1.gif';
 
 const Guestbook = () => {
   const [messages, setMessages] = useState([]);
@@ -78,42 +79,55 @@ const Guestbook = () => {
   };
 
   return (
-    <div className="guestbook-container">
-      <h2>这里是我们，只有我们</h2>
-      {error && <p className="error-message">{error}</p>}
-
-      {/* 提交留言表单 */}
-      <form onSubmit={handleSubmit} className="guestbook-form">
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="要说些什么呢"
-          disabled={loading}
+    <div className="guestbook-wrapper">
+      {/* 添加GIF，放在整个留言板容器上方 */}
+      <div className="gif-container">
+        <img 
+          src={gif}  // 替换成你自己的GIF路径
+          alt="gif"
+          className="gif"
         />
-        <div className="form-controls">
-          <select value={author} onChange={(e) => setAuthor(e.target.value)} disabled={loading}>
-            <option value="you">西西</option>
-            <option value="me">卜卜</option>
-          </select>
-          <button type="submit" disabled={loading}>
-            {loading ? '提交中...' : '亲爱的，轻轻点击这里写下'}
-          </button>
-        </div>
-      </form>
+      </div>
 
-      {/* 显示留言 */}
-      <div className="messages">
-        {messages.length === 0 ? (
-          <p>没有留言</p>
-        ) : (
-          messages.map((msg) => (
-            <div key={msg.id} className={`message ${msg.author}`}>
-              <p className="author">{msg.author === 'you' ? '西西' : '卜卜'}</p>
-              <p className="text">{msg.text}</p>
-              <p className="time">{msg.time}</p> {/* 显示已转换的时间 */}
-            </div>
-          ))
-        )}
+      <div className="guestbook-container">
+        <h2>这里是我们，只有我们</h2>
+
+        {/* 错误消息 */}
+        {error && <p className="error-message">{error}</p>}
+
+        {/* 提交留言表单 */}
+        <form onSubmit={handleSubmit} className="guestbook-form">
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="要说些什么呢"
+            disabled={loading}
+          />
+          <div className="form-controls">
+            <select value={author} onChange={(e) => setAuthor(e.target.value)} disabled={loading}>
+              <option value="you">西西</option>
+              <option value="me">卜卜</option>
+            </select>
+            <button type="submit" disabled={loading}>
+              {loading ? '提交中...' : '亲爱的，轻轻点击这里写下'}
+            </button>
+          </div>
+        </form>
+
+        {/* 显示留言 */}
+        <div className="messages">
+          {messages.length === 0 ? (
+            <p>没有留言</p>
+          ) : (
+            messages.map((msg) => (
+              <div key={msg.id} className={`message ${msg.author}`}>
+                <p className="author">{msg.author === 'you' ? '西西' : '卜卜'}</p>
+                <p className="text">{msg.text}</p>
+                <p className="time">{msg.time}</p> {/* 显示已转换的时间 */}
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

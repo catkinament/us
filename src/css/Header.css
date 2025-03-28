@@ -1,0 +1,46 @@
+/* Header 样式 */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(45deg, #6a11cb,#a4508b, #6a11cb);
+    background-size: 3000% 3000%;
+    animation: gradientFlow 6s ease infinite;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+  
+  /* 防止页面内容被 Header 遮挡 */
+body {
+    padding-top: 50px; /* 让页面内容下移，避免被顶部导航栏遮挡 */
+  }
+
+  /* 导航栏样式 */
+  .header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  .header nav ul li {
+    display: inline;
+  }
+  
+  .header nav ul li a {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 15px;
+    transition: color 0.3s ease-in-out;
+  }
+  
+  .header nav ul li a:hover {
+    color: #52ed41; /* 鼠标悬停变为金色 */
+  }
+  
