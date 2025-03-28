@@ -12,6 +12,6 @@ npm run update && (
     git push origin main
 
     echo UPDATE SUCCESSFULLY!
+    pause
 )
 
-pause
