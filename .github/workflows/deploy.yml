@@ -27,6 +27,7 @@ jobs:
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}  # 使用 GitHub Secrets 中的 Supabase URL
         SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}  # 使用 GitHub Secrets 中的 Supabase Anon Key
+        REACT_APP_DOMAIN: ${{ secrets.REACT_APP_DOMAIN }}
 
     - name: Deploy to Hosting
       run: npm run deploy  # 执行部署命令（你可以根据需要修改）
