@@ -21,8 +21,8 @@ const calculateTimeUntil = (month, day) => {
 };
 
 const Home = () => {
-  const myBirthday = { month: 10, day: 5 };      // 你的生日
-  const partnerBirthday = { month: 4, day: 7 }; // 爱人的生日
+  const myBirthday = { month: 4, day: 7 };      // 卜卜的生日
+  const partnerBirthday = { month: 10, day: 5 }; // 西西的生日
 
   const [timeUntilMyBirthday, setTimeUntilMyBirthday] = useState(calculateTimeUntil(myBirthday.month, myBirthday.day));
   const [timeUntilPartnerBirthday, setTimeUntilPartnerBirthday] = useState(calculateTimeUntil(partnerBirthday.month, partnerBirthday.day));
